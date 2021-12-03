@@ -2,7 +2,7 @@ import React, { useState, useEffect,useMemo } from 'react';
 import { Breadcrumb, Table, Button, Space, Dropdown, Menu, Form, Input, Select, DatePicker, Popover, message } from "antd"
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { Link} from 'umi';
-import { getChargeData } from "../../../api/shop"
+import { getCharge } from "../../../api/shop"
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -32,6 +32,8 @@ export default function charge() {
   const [selectedRows, setSelectedRows] = useState([]);
   const [total, setTotal] = useState("");
   const [pageDate, setPageDate] = useState({ pageNum: 1, pageSize: 10 });
+  // 电站数据
+  const [chargeList, setchargeList] = useState([]);
 
   const onFinish = (values) => {
     console.log(values);
@@ -46,10 +48,11 @@ export default function charge() {
   let page = useMemo(() => {
     return pageDate
   },[pageDate])
-  
+
   // 获取充电桩数据
   const getChargeDate = async (pageDate) => {
-    const res = await getChargeData(pageDate)
+    console.log("数据请求执行");
+    const res = await getCharge(pageDate)
     if (res) {
       setchargeList([...res.rows])
       setTotal(res.total)
@@ -58,8 +61,7 @@ export default function charge() {
   }
   // 后端翻页
   
-  // 电站数据
-  const [chargeList, setchargeList] = useState([]);
+
   // 新增
   const setAgeSort = () => {
     message.error("请前往商家入驻进行添加！")
@@ -81,9 +83,11 @@ export default function charge() {
 
   }
 
-  const handleChange = (pagination, filters, sorter) => {
+  // 表格翻页 
+  const handleChange = (currentpage, pageSize) => {
+    console.log(currentpage);
+    console.log(pageSize);
     // setPageDate()
-    console.log(filters);
   };
 
   // button按钮更多操作
@@ -189,6 +193,7 @@ export default function charge() {
 
   return (
     <div>
+      {/* 面包屑 */}
       <Breadcrumb style={{ marginBottom: "20px" }}>
         <Breadcrumb.Item>
           <Link to="/home">主页</Link>
@@ -200,28 +205,17 @@ export default function charge() {
       {/* 搜索 */}
       <div style={{ marginBottom: "10PX" }}>
         <Form {...layout} form={form} layout="inline" name="control-hooks" onFinish={onFinish} >
-          <Form.Item
-            name="shopName"
-            label="名称："
-            style={{ paddingLeft: 10 }}
-          >
-            <Input style={{ width: 220 }} />
-          </Form.Item>
-          <Form.Item
-            name="tel"
-            label="手机号："
-            style={{ paddingLeft: 10 }}
-          >
-            <Input style={{ width: 220 }} />
-          </Form.Item>
-          <Form.Item
-            name="shopName"
-            label="负责人："
-            style={{ paddingLeft: 10 }}
-          >
+          <Form.Item name="shopName" label="名称：" style={{ paddingLeft: 10 }}>
             <Input style={{ width: 220 }} />
           </Form.Item>
 
+          <Form.Item name="tel" label="手机号：" style={{ paddingLeft: 10 }}>
+            <Input style={{ width: 220 }} />
+          </Form.Item>
+          
+          <Form.Item name="shopName" label="负责人：" style={{ paddingLeft: 10 }}>
+            <Input style={{ width: 220 }} />
+          </Form.Item>
 
 
           <Form.Item {...tailLayout} style={{ width: 300 }} className="btn">
@@ -254,8 +248,8 @@ export default function charge() {
               更多操作 <DownOutlined />
             </Button>
           </Dropdown>
-          {/* <Button onClick={clearAll}>更多操作</Button> */}
         </Space>
+
         <Table
           pagination={{
             defaultPageSize: 5,
@@ -265,12 +259,13 @@ export default function charge() {
             showQuickJumper: true,
             showSizeChanger: true,
             pageSizeOptions: [5, 10, 15, 20],
+            onChange:handleChange
           }}
+          
           columns={columns}
           dataSource={chargeList}
           rowKey="id"
           loading={chargeList ? false : true}
-          onChange={handleChange}
           rowSelection={{ ...rowSelection }}
         />
       </>

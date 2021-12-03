@@ -5,7 +5,7 @@ export default defineConfig({
     type: 'none',
   },
   routes: [
-    { path: '/', redirect: '/home' },
+    { path: '/', redirect: '/login' },
     { path: '/login', component: '@/pages/login' },
     {
       path: '/',

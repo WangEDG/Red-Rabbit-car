@@ -8,7 +8,7 @@ import {
   UploadOutlined,
 } from '@ant-design/icons';
 import styles from './index.less';
-import { useDispatch } from 'umi';
+import { useDispatch,useHistory } from 'umi';
 import { extend } from 'umi-request';
 import query from '../../utils/toqueryString';
 import { shopAdd } from '../../api/shopAdd';
@@ -26,6 +26,7 @@ export default function index() {
   const [phone, setphone] = useState('');
 
   const dispatch = useDispatch();
+  const history = useHistory()
 
   let change = (id) => {
     let newlogin = login.map((item) => {
@@ -68,13 +69,18 @@ export default function index() {
         data: `username=${values.username}&password=${values.password}`,
       })
       .then(function (res) {
-        console.log(res.data.user);
         const token = res.data.token;
         localStorage.setItem('token', token);
+
+        // redux存储用户信息
         dispatch({
           type: 'userModel/updateUserInfo',
           payload: res.data.user,
         });
+
+        // 跳转到首页
+        history.push("/home")
+
       })
       .catch(function (err) {
         console.log(err);

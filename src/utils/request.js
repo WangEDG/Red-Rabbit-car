@@ -9,7 +9,7 @@ const request = extend({
     'Content-Type': 'application/x-www-form-urlencoded',
      Authentication: localStorage.getItem('token'),
   },
-
+  
   // 默认处理请求错误
   errorHandler: (err) => {
     console.log('请求失败', err);
