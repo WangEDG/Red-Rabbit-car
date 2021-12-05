@@ -69,7 +69,6 @@ export default function charge() {
   }
 
   const handleChange = (pagination, filters, sorter) => {
-    debugger
     console.log('Various parameters', pagination, filters, sorter);
   };
 

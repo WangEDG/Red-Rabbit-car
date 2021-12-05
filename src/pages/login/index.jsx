@@ -93,6 +93,7 @@ export default function index() {
     values.licenceImg = values.licenceImg.file.response.data[0];
     const string = query(values);
     const res = await shopAdd({ data: string });
+    debugger
     if (res.result) {
       message.success('商家入驻成功');
       setIsShow(!isShow);

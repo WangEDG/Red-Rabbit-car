@@ -22,7 +22,6 @@ const tailLayout = {
 };
 
 export default function charge() {
-
   useEffect(() => {
     getChargeDate(pageDate)
   }, [])
@@ -32,6 +31,7 @@ export default function charge() {
   const [selectedRows, setSelectedRows] = useState([]);
   const [total, setTotal] = useState("");
   const [pageDate, setPageDate] = useState({ pageNum: 1, pageSize: 10 });
+  const [tableLoading,setTableLoading] = useState(false);
   // 电站数据
   const [chargeList, setchargeList] = useState([]);
 
@@ -51,11 +51,12 @@ export default function charge() {
 
   // 获取充电桩数据
   const getChargeDate = async (pageDate) => {
-    console.log("数据请求执行");
+    setTableLoading(true);
     const res = await getCharge(pageDate)
     if (res) {
       setchargeList([...res.rows])
       setTotal(res.total)
+      setTableLoading(false);
     }
     console.log(res);
   }
@@ -261,7 +262,10 @@ export default function charge() {
             pageSizeOptions: [5, 10, 15, 20],
             onChange:handleChange
           }}
-          
+          loading = {tableLoading}
+          bordered= {true}
+          scrollToFirstRowOnChange = {true}
+          // scroll={{y: 300 }}
           columns={columns}
           dataSource={chargeList}
           rowKey="id"

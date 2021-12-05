@@ -20,7 +20,15 @@ export const getAuditData =()=>{
     return request.get("/api/gen/apply",{params:{pageSize:100}})
 }
 
+
+
+
+
 // 获取所有门店信息
-export const getFindAll =()=>{
-    return request.get("/api/gen/shop/findAll")
+export const getFindAll =(query)=>{
+    return request.get("/api/gen/shop/findAll",{params:query});
+}
+// 获取门店警告信息
+export const getwarn =(id)=>{
+    return request.get("/api/gen/warn?id=" + id);
 }
