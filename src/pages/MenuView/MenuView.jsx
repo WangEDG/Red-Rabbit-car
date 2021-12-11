@@ -124,17 +124,17 @@ export default function home(props) {
             </Menu.Item>
           </SubMenu>
 
-          <SubMenu key="sub4" icon={<RadarChartOutlined />} title="服务项目">
-            <Menu.Item key="17">
+          <SubMenu key="serve" icon={<RadarChartOutlined />} title="服务项目">
+            <Menu.Item key="/serve/category">
               <Link to="/serve/category">类别管理</Link>
             </Menu.Item>
-            <Menu.Item key="18">
+            <Menu.Item key="/serve/shopCategory">
               <Link to="/serve/shopCategory">商户项目</Link>
             </Menu.Item>
-            <Menu.Item key="19">
+            <Menu.Item key="/serve/statistics">
               <Link to="/serve/statistics">数据统计</Link>
             </Menu.Item>
-            <Menu.Item key="20">
+            <Menu.Item key="/serve/commission">
               <Link to="/serve/commission">抽成管理</Link>
             </Menu.Item>
           </SubMenu>

@@ -5,7 +5,10 @@ import {
 } from "antd"
 import { DownOutlined, UpOutlined, CopyOutlined } from '@ant-design/icons';
 import { Link } from 'umi';
-import { getFindAll, getwarn } from "../../../api/shop"
+import { getFindAll, getwarn,statusChange } from "../../../api/shop";
+import toString from '@/utils/toqueryString';
+
+
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -36,6 +39,7 @@ export default function charge() {
   const [warnList, setWarnList] = useState([]);
   // 总条数
   const [total, setTotal] = useState(0);
+  const [warntotal, setWarntotal] = useState(0);
   const [detailData, setdetailData] = useState({});
   // button按钮更多操作
   const DropdownMenu = <Menu onClick={handleMenuClick}>
@@ -124,11 +128,11 @@ export default function charge() {
       title: '操作',
       dataIndex: 'status',
       key: 'status',
-      render: (status) => (
+      render: (status,record) => (
         status == 1 ?
           <>
             <Button size="small" type="primary">警告</Button> &nbsp;&nbsp;
-            <Button size="small" danger>下架</Button>
+            <Button size="small" danger  onClick={()=>{soldOut(record)}}>下架</Button>
           </>
           :
           <Button size="small" type="primary">警告</Button>
@@ -172,7 +176,7 @@ export default function charge() {
       key: 'status',
       // render函数第一个参数是当前key  第二个参数是整行数据
       render: (status, record) => (
-        status == 1 ? null : <Button size="small" type="primary">警告</Button>
+        status == 1 ? null : <Button size="small" type="default">整改</Button>
       )
     },
   ];
@@ -228,8 +232,8 @@ export default function charge() {
   const openWarning = (row) => {
     setWarningModalVisible(true);
     getwarn(row.id).then(res => {
-      debugger
-      setWarnList(res);
+      setWarnList(res.warnlist);
+      setWarntotal(res.warnlist.length);
     })
 
   };
@@ -237,6 +241,8 @@ export default function charge() {
     setDetailsModalVisible(false);
   }
   const closeWarningModal = () => {
+    setWarnList([]);
+    setWarntotal(0);
     setWarningModalVisible(false);
   }
 
@@ -263,7 +269,6 @@ export default function charge() {
     setQuery({ ...query, pageSize: Size, pageNum: 1 });
   };
 
-
   // 表格选中
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
@@ -275,6 +280,16 @@ export default function charge() {
       name: record.name,
     }),
   };
+
+  // 下架
+  const soldOut = (row)=>{
+    let data = toString({id:row.id,status:"1"});
+    debugger
+    statusChange(data).then(res=>{
+      debugger
+    })
+  }
+
 
 
   return (
@@ -344,7 +359,7 @@ export default function charge() {
           loading={tableLoading}
           bordered={true}
           columns={columns}
-          dataSource={warnList}
+          dataSource={shopList}
           rowKey="id"
           rowSelection={{ ...rowSelection }}
         />
@@ -358,14 +373,14 @@ export default function charge() {
       </Modal>
 
       {/* 警告弹框 */}
-      <Modal title="警告详情" visible={warningModalVisible} footer={null} onCancel={closeWarningModal}>
+      <Modal title="警告详情" visible={warningModalVisible} footer={null} onCancel={closeWarningModal}  destroyOnClose={true}  width={1200}>
         <Table
           pagination={{
             current: query.pageNum,
             // pageSize:query.pageSize,
             defaultPageSize: query.pageSize,
             defaultCurrent: query.pageNum,
-            total: total,
+            total: warntotal,
             showTotal: (total, range) => { return `共计 ${total} 条数据，当前展示${range}` },
             showQuickJumper: true,
             showSizeChanger: true,
@@ -376,9 +391,9 @@ export default function charge() {
           loading={tableLoading}
           bordered={true}
           columns={warnColumns}
-          dataSource={shopList}
+          dataSource={warnList}
           rowKey="id"
-          rowSelection={{ ...rowSelection }}
+          // rowSelection={{ ...rowSelection }}
         />
       </Modal>
     </div>
