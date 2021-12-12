@@ -18,3 +18,4 @@ node_modules
 /src/.umi-production
 /src/.umi-test
 /.env.local
+记录文件.txt
