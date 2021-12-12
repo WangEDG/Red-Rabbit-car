@@ -118,6 +118,7 @@ export default function charge() {
         payload: { name }
 
       }).then(res => {
+        debugger
         setTableLoading(false);
       })
 
