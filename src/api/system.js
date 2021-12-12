@@ -1,10 +1,14 @@
 import request from "../utils/request"
 
-// 手机号重复验证
-export const tel =()=>{
-    return request.get("/gen/apply/shop/tel/${tel}")
-}
+/***
+*菜单管理
+*/
 
+//获取菜单数据
+export const getMenu = (query)=>{
+  debugger
+  return request.get("/menu",{params:query})
+}
 // 新增店铺或充电桩
 export const shopAdd =(data)=>{
     debugger

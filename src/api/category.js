@@ -2,20 +2,20 @@ import request from "../utils/request"
 
 // 获取所有服务类别
 export const getServicetype = (query) => {
-  return request.get("/api/gen/servicetype", {
+  return request.get("/gen/servicetype", {
     params: query
   })
 }
 
 // 删除服务类别
 export const delServicetype = (id) => {
-  return request.delete(`/api/gen/servicetype/${id}`)
+  return request.delete(`/gen/servicetype/${id}`)
 }
 
 
 // 新增类别
 export const addServicetype = (data) => {
-  return request(`/api/gen/servicetype`, {
+  return request(`/gen/servicetype`, {
     method: 'POST',
     data
   })
@@ -25,7 +25,7 @@ export const addServicetype = (data) => {
 // 修改类别
 export const altServicetype = (data) => {
   debugger
-  return request(`/api/gen/servicetype`, {
+  return request(`/gen/servicetype`, {
     method: 'put',
     data
   })
