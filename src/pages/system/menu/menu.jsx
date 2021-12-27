@@ -5,7 +5,7 @@ import {
   Drawer, Breadcrumb, Table, Button, Space, Popconfirm, message, Tree, Dropdown,
   Menu, Form, Input, InputNumber, Select, DatePicker, Popover, Tag,Modal, Tooltip,
 } from "antd"
-import { SettingOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { SettingOutlined, ExclamationCircleOutlined,QuestionCircleOutlined } from '@ant-design/icons';
 //引入日期选择国际化设置（中文）
 import locale from 'antd/lib/date-picker/locale/zh_CN';
 
@@ -42,7 +42,7 @@ const draformLayout = {
   labelCol: { span: 6 },
 
   // from表单的输入控件布局配置项
-  wrapperCol: { span: 14, },
+  wrapperCol: { span: 20, },
 };
 
 export default function charge() {
@@ -50,6 +50,20 @@ export default function charge() {
   const { categoryData } = useSelector(state => {
     return state.category
   });
+
+  // 表格类型列筛选 (不成功 有问题)
+  const filter = (value, record) => {
+      // console.log(value);
+      // console.log(record);
+
+      // if(record.children){
+      //   filter(record.children)
+      // }
+      // else{
+      //   return record.type.indexOf(value) === 0
+      // }
+  }
+
   // 表格标题配置项
   const columns = [
     {
@@ -86,7 +100,16 @@ export default function charge() {
         else if(type == 1){
           return (<Tag color="red">按钮</Tag>)
         }
-      }
+      },
+      // 筛选
+      filters:[
+        {text:'菜单',value:"0"},
+        {text:'按钮',value:"1"},
+      ],
+      // onFilter:filter(value, record),
+      onFilter: (value, record) => {
+        filter(value, record)
+      },
     },
     {
       title: '路径',
@@ -166,7 +189,7 @@ export default function charge() {
   const [treeData, setTreeData] = useState([]);//抽屉tree
   const [setData, setSetData] = useState({});//当前要操作的数据
   const [selectData, seSelectData] = useState({});//当前表格勾选数据
-  const [tag, setTag] = useState("新增");//新增或修改
+  const [tag, setTag] = useState("");//新增按钮、新增菜单或修改
   const [warningModalVisible, setWarningModalVisible] = useState(false);
   // 翻页数据
   const [query, setQuery] = useState({
@@ -327,10 +350,24 @@ export default function charge() {
   const set = (type, data) => {
     console.log(data);
     setSetData(data);
-    setTitle("修改服务类别");
+    setTag("修改");
+    setTitle("修改菜单");
+
     draForm.setFieldsValue({
       id: data
     })
+    setDrawerVisible(true);
+  }
+  // 新增按钮
+  const createButton = ()=>{
+    setTag("新增按钮");
+    setTitle("新增按钮");
+    setDrawerVisible(true);
+  }
+  // 新增菜单
+  const createMenu = ()=>{
+    setTag("新增菜单");
+    setTitle("新增菜单");
     setDrawerVisible(true);
   }
   // 关闭抽屉
@@ -397,6 +434,49 @@ export default function charge() {
   }
 
 
+  //根据点击的按钮 构造表单
+  const StructureForm = (tag)=>{
+    if(tag == "修改"){
+      return (
+        <>
+          <Form.Item name="menuName" label="菜单名称:" rules={[{ required: true, message: '请输入菜单名称' }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="path" label="菜单URL:" rules={[{ required: true, message: '请输入菜单URL' }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="component" label="组件地址:" rules={[{ required: true, message: '请输入组件地址' }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="perms" label="相关权限:">
+            <Input />
+          </Form.Item>
+          <Form.Item name="icon" label="菜单图标:">
+            <Input addonAfter={ <SettingOutlined /> } allowClear />
+          </Form.Item>
+          <Form.Item name="icon" label="菜单图标:">
+            <Input />
+          </Form.Item>
+        </>
+      )
+    }
+    else if (tag == "新增按钮"){
+      return(
+        <Form.Item name="name" label="服务类型名称:" rules={[{ required: true, message: '请输入服务类型名称' }]}>
+            <Input />
+        </Form.Item>
+      )
+    }
+    else if (tag == "新增菜单"){
+      return(
+        <Form.Item name="name" label="服务类型名称:" rules={[{ required: true, message: '请输入服务类型名称' }]}>
+            <Input />
+        </Form.Item>
+      )
+    }
+  }
+
+
 
 
 
@@ -454,7 +534,16 @@ export default function charge() {
       <>
         {/* 操作按钮 */}
         <Space style={{ marginBottom: 10, marginTop: 10 }}>
-          <Button onClick={setAgeSort}>新增</Button>
+          <Popconfirm
+            placement="topLeft"
+            icon={<QuestionCircleOutlined />}
+            title="请选择创建类型"
+            okText="菜单" cancelText="按钮"
+            onCancel={createButton}
+            onConfirm={createMenu}
+            >
+              <Button>新增</Button>
+          </Popconfirm>
           <Button onClick={clearFilters}>删除</Button>
         </Space>
 
@@ -501,25 +590,9 @@ export default function charge() {
           </>
         }
       >
-        {
-          drawerVisible ?
-            <Form {...draformLayout} form={draForm} layout="horizontal" labelAlign="left" name="control-hooks" onFinish={submit}
-            // initialValues={{ name: setData.title }}//表单的默认值
-            >
+            <Form {...draformLayout} form={draForm} layout="horizontal" labelAlign="left" name="control-hooks" onFinish={submit}>
 
-              {
-                tag === "新增" ?
-                  <Form.Item name="name" label="服务类型名称:" rules={[{ required: true, message: '请输入服务类型名称' }]}>
-                    <Input />
-                  </Form.Item>
-                  :
-                  <Tooltip placement="top" title="输入新名称可进行修改" arrowPointAtCenter>
-                    <Form.Item name="name" label="服务类型名称:" rules={[{ required: true, message: '请输入服务类型名称' }]}>
-                      <Input />
-                    </Form.Item>
-                  </Tooltip>
-
-              }
+              {StructureForm(tag)}
 
               <Form.Item name="id" label="上级类型:" rules={[{ required: true, message: '请选择上级类型' }]}>
                 <Tree
@@ -530,14 +603,11 @@ export default function charge() {
                   onCheck={onCheck}
                   checkable={true}
                   checkStrictly={true}
-                  treeData={treeData}
+                  treeData={menuList.children}
                 />
               </Form.Item>
 
             </Form>
-            :
-            null
-        }
       </Drawer>
     </div >
   );

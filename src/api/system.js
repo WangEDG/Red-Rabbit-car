@@ -6,7 +6,6 @@ import request from "../utils/request"
 
 //获取菜单数据
 export const getMenu = (query)=>{
-  debugger
   return request.get("/menu",{params:query})
 }
 // 新增店铺或充电桩
