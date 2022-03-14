@@ -20,7 +20,7 @@ export default {
         const res = yield call( getMenu, payload );
         // 修改数据
         if (res) {
-          yield put({type:"updateCategoryList",payload:res,})
+          yield put({type:"updateMenuList",payload:res,})
         }
         return res
       },
